@@ -9,6 +9,8 @@ Instead, directories are linked to environments in a list persisted on a text fi
 Calling `viper` to run as a frontend for `python` or `pip` will trigger a lookup on that file.
 That's how `viper` knows which environment to use.
 
+**Important**: It's only been tested on Ubuntu!
+
 ## Installation
 
 Run `$ lake script run setup`, which will build `viper` and ask you where to place its binary.
