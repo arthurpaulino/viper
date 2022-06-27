@@ -49,12 +49,12 @@ script setup do
   match ← runCmd "lake build" with
   | .ok  _   =>
     let mut binDir : String := s!"{← getHomeDir}/.local/bin"
-    IO.print s!"target directory for the viper binary? (default={binDir})"
+    IO.print s!"target directory for the viper binary? (default={binDir}) "
     let input := (← (← IO.getStdin).getLine).trim
     if !input.isEmpty then
       binDir := input
-    match ← runCmd s!"mv build/bin/viper {binDir}/viper" with
-    | .ok _    => IO.println "viper binary moved!"; return 0
+    match ← runCmd s!"cp build/bin/viper {binDir}/viper" with
+    | .ok _    => IO.println s!"viper binary placed at {binDir}/"; return 0
     | .err res => IO.eprintln res; return 1
     | .non     => unreachable!
   | .err res => IO.eprintln res; return 1

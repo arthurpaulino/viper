@@ -42,6 +42,9 @@ def getViperDir : IO String :=
 def getEnvsDir : IO String :=
   return s!"{← getViperDir}/envs"
 
+def getEnvDir (env : String) : IO String :=
+  return s!"{← getEnvsDir}/{env}"
+
 def getLinksFilePath : IO System.FilePath :=
   return ⟨s!"{← getViperDir}/links"⟩
 
@@ -50,7 +53,7 @@ def getLinksBackupFilePath : IO System.FilePath :=
 
 def listEnvs : IO $ List String := do
   match ← runCmd s!"ls {← getEnvsDir}" with
-  | .ok res => return res.replace "\n" " " |>.splitOn " "
+  | .ok res => return res.trim.replace "\n" " " |>.splitOn " "
   | _ => unreachable!
 
 def withNewEnv (env : String) (u : IO UInt32) : IO UInt32 := do
@@ -67,7 +70,7 @@ def mkViperDirs : IO Unit := do
     IO.FS.writeFile linksFilePath "\n"
 
 def getPythonPath (env : String) : IO String :=
-  return s!"{← getEnvsDir}/{env}/bin/python"
+  return s!"{← getEnvDir env}/bin/python"
 
 def getPipPath (env : String) : IO String :=
-  return s!"{← getEnvsDir}/{env}/bin/pip"
+  return s!"{← getEnvDir env}/bin/pip"
