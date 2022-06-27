@@ -45,11 +45,11 @@ def getHomeDir : IO String :=
   return s!"{"/".intercalate $ (← getCurrDir).splitOn "/" |>.take 3}"
 
 script setup do
-  IO.println "building viper binary"
+  IO.println "building viper..."
   match ← runCmd "lake build" with
   | .ok  _   =>
     let mut binDir : String := s!"{← getHomeDir}/.local/bin"
-    IO.print "target directory for the viper binary? (default = '$HOME/.local/bin')"
+    IO.print s!"target directory for the viper binary? (default={binDir})"
     let input := (← (← IO.getStdin).getLine).trim
     if !input.isEmpty then
       binDir := input

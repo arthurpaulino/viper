@@ -3,16 +3,16 @@ import Std
 
 abbrev Links := Std.RBMap String String compare
 
-def Links.empty : Links :=
+namespace Links
+
+def empty : Links :=
   .empty
 
-def Links.insert (ls : Links) (dir env : String) : Links :=
-  Std.RBMap.insert ls dir env
+def eraseEnv (links : Links) (env : String) : Links :=
+  links.fold (init := .empty) fun acc d e =>
+    if e == env then acc else acc.insert d e
 
-def Links.erase (ls : Links) (dir : String) : Links :=
-  Std.RBMap.erase ls dir
-
-def Links.ofString (s : String) : Option Links := Id.run do
+def ofString (s : String) : Option Links := Id.run do
   let mut links : Links := .empty
   let mut wellFormed : Bool := true
   for line in (s.trim.splitOn "\n" |>.filter fun l => !l.isEmpty) do
@@ -22,35 +22,57 @@ def Links.ofString (s : String) : Option Links := Id.run do
   if wellFormed then some links
   else none
 
-def Links.toString (ls : Links) : String :=
+def toString (ls : Links) : String :=
   ls.fold (init := default) fun acc dir env => s!"{acc}{dir} => {env}\n"
+
+end Links
+
+def resetLinksTo (links : Links) (oldLinksStr : String)  : IO Unit := do
+  let linksBackupFilePath ← getLinksBackupFilePath
+  IO.FS.writeFile linksBackupFilePath oldLinksStr
+  IO.eprintln   "ill-formatted links file"
+  IO.eprintln   "  - a new one was generated"
+  IO.eprintln s!"  - the old backup is at {linksBackupFilePath}"
+  IO.FS.writeFile (← getLinksFilePath) links.toString
 
 def getLinks : IO $ (System.FilePath × String × Option Links) := do
   let linksFilePath ← getLinksFilePath
   let linksStr ← IO.FS.readFile linksFilePath
   return (linksFilePath, linksStr, Links.ofString linksStr)
 
-def resetLinksTo (linksStr : String) (links : Links) : IO Unit := do
-  let linksBackupFilePath ← getLinksBackupFilePath
-  IO.FS.writeFile linksBackupFilePath linksStr
-  IO.eprintln s!"ill-formatted links file. generating a new one. old backup is at {linksBackupFilePath}"
-  IO.FS.writeFile (← getLinksFilePath) links.toString
-
-def withModifiedLinks (f g : Links → String → Links) : IO Unit := do
-  let dir ← getCurrDir
+def withModifiedLinks (f : Links → Links) (eraseWith : Links := .empty) :
+    IO Unit := do
   let (linksFilePath, linksStr, links) ← getLinks
   match links with
-  | some links => IO.FS.writeFile linksFilePath (f links dir).toString
-  | none => resetLinksTo linksStr (g .empty dir)
+  | some links => IO.FS.writeFile linksFilePath (f links).toString
+  | none => resetLinksTo eraseWith linksStr
 
-def linkEnv (env : String) : IO Unit :=
-  let f := fun links dir => links.insert dir env
-  withModifiedLinks f f
+def linkEnv (env : String) : IO Unit := do
+  let dir ← getCurrDir
+  withModifiedLinks
+    (fun links => links.insert dir env)
+    (Links.empty.insert dir env)
 
-def unlinkEnv : IO Unit :=
-  withModifiedLinks (fun links dir => links.erase dir) (fun links _ => links)
+def unlinkDir (dir : String) : IO Unit :=
+  withModifiedLinks $ fun links => links.erase dir
+
+def unlinkLocalDir : IO Unit := do
+  unlinkDir (← getCurrDir)
+
+def unlinkEnv (env : String) : IO Unit :=
+  withModifiedLinks $ fun links => links.eraseEnv env
+
+def relinkEnv (env env' : String) : IO Unit :=
+  withModifiedLinks $ fun links =>
+    links.fold (init := .empty) fun acc d e =>
+      if e == env then acc.insert d env' else acc.insert d env
 
 def getLinkedEnv : IO $ (Option String) := do
-  match Links.ofString (← IO.FS.readFile (← getLinksFilePath)) with
-  | some links => return links.find? (← getCurrDir)
-  | none       => return none
+  match ← getLinks with
+  | (_, _, some links) => return links.find? (← getCurrDir)
+  | (_, _, none)       => return none
+
+def withLinkedEnv (f : String → IO UInt32) : IO UInt32 := do
+  match ← getLinkedEnv with
+  | some env => f env
+  | none     => IO.eprintln "no linked environment"; return 1

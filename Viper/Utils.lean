@@ -3,8 +3,7 @@ def List.pop : (l : List α) → l ≠ [] → α × Array α
 
 inductive CmdResult
   | ok  : String → CmdResult
-  | err : String → CmdResult
-  | non : CmdResult
+  | err : String → CmdResult        
 
 def runCmd (cmd : String) : IO CmdResult := do
   let cmd := cmd.splitOn " "
@@ -16,9 +15,9 @@ def runCmd (cmd : String) : IO CmdResult := do
     }
     return if out.exitCode != 0 then .err out.stderr
       else .ok out.stdout
-  else return .non
+  else return .ok ""
 
-def spawn (cmd : String) : IO Unit := do
+def spawn (cmd : String) : IO UInt32 := do
   let cmd := cmd.splitOn " "
   if h : cmd ≠ [] then
     let (cmd, args) := cmd.pop h
@@ -26,7 +25,8 @@ def spawn (cmd : String) : IO Unit := do
       cmd := cmd
       args := args
     }
-    let _ ← child.wait
+    child.wait
+  else return 0
 
 def getCurrDir : IO String := do
   match ← runCmd "pwd" with
@@ -48,10 +48,15 @@ def getLinksFilePath : IO System.FilePath :=
 def getLinksBackupFilePath : IO System.FilePath :=
   return ⟨s!"{← getViperDir}/links_backup"⟩
 
-def listEnvs : IO $ Option (List String) := do
+def listEnvs : IO $ List String := do
   match ← runCmd s!"ls {← getEnvsDir}" with
-  | .ok res => return some $ res.replace "\n" " " |>.splitOn " "
-  | _ => return none
+  | .ok res => return res.replace "\n" " " |>.splitOn " "
+  | _ => unreachable!
+
+def withNewEnv (env : String) (u : IO UInt32) : IO UInt32 := do
+  if (← listEnvs).contains env then
+    IO.eprintln s!"environment '{env}' already exists"; return 1
+  else u
 
 def mkViperDirs : IO Unit := do
   let envsDir : System.FilePath := ⟨← getEnvsDir⟩
