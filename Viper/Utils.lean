@@ -22,10 +22,11 @@ def spawn (cmd : String) : IO Unit := do
   let cmd := cmd.splitOn " "
   if h : cmd ≠ [] then
     let (cmd, args) := cmd.pop h
-    let _ ← IO.Process.spawn {
+    let child ← IO.Process.spawn {
       cmd := cmd
       args := args
     }
+    let _ ← child.wait
 
 def getCurrDir : IO String := do
   match ← runCmd "pwd" with
