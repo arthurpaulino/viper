@@ -31,7 +31,7 @@ notation:
   * '$x' means an arbitrary input, to be referenced as `x`
   * '$[⋯ xs]' means an arbitrary sequence of inputs, to be referenced as `xs`
 
-usage: `viper $cmd`, where `cmd` is:
+usage: `viper $COMMAND`, where `COMMAND` is:
 
   #### info
   help                 prints this menu being read
@@ -53,7 +53,8 @@ usage: `viper $cmd`, where `cmd` is:
   unlink env $e        removes any links to the environment `e`
 
   #### maintenance
-  fix                  creates a new (empty) links file, backing up the old one
+  fix                  if the current links file is corrupted, creates a new
+                       (empty) one, backing up the old one
   health               searches for:
                         - inexistent linked directories
                         - inexistent linked environments

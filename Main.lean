@@ -28,7 +28,8 @@ def printHelp : IO UInt32 := do
   unlink env $e        removes any links to the environment `e`
 
   #### maintenance
-  fix                  creates a new (empty) links file, backing up the old one
+  fix                  if the current links file is corrupted, creates a new
+                       (empty) one, backing up the old one
   health               searches for:
                         - inexistent linked directories
                         - inexistent linked environments
