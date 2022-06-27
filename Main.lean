@@ -3,10 +3,10 @@ import Viper.Linking
 import Viper.HealthCheck
 
 def printHelp : IO UInt32 := do
-  IO.println "Notation:
+  IO.println "notation:
   * '$x' means an arbitrary input, to be referenced as `x`
   * '$[⋯ xs]' means an arbitrary sequence of inputs, to be referenced as `xs`"
-  IO.println "\nUsage: `viper $COMMAND`, where COMMAND is:
+  IO.println "\nusage: `viper $COMMAND`, where `COMMAND` is:
 
   #### info
   help                 prints this menu being read
