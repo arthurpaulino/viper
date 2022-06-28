@@ -13,20 +13,20 @@ That's how `viper` knows which environment to use.
 
 ## Installation
 
-Run `$ lake script run setup`, which will build `viper` and ask you where to place its binary.
+Run `lake script run setup`, which will build `viper` and ask you where to place its binary.
 You can place it in a directory that's already in your path, for example.
 
 ## Usage
 
 Again, you can use `viper` to manage environments or as an interface for `python` and `pip`:
 
-* Create a new environment with `$ viper new my-env`
-* Link the current directory to an environment with `$ viper link my-env`
-* Create and link in a single command with `$ viper new! my-env`
-* Install packages with `$ viper install pkg1 pkg2`
-* Run Python with `$ viper my_file.py`
+* Create a new environment with `viper new my-env`
+* Link the current directory to an environment with `viper link my-env`
+* Create and link in a single command with `viper new! my-env`
+* Install packages with `viper install pkg1 pkg2`
+* Run Python with `viper my_file.py`
 
-Use `$ viper help` to see the full documentation:
+Use `viper help` to see the full documentation:
 
 ```text
 notation:
