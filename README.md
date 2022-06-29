@@ -13,6 +13,8 @@ That's how `viper` knows which environment to use.
 
 ## Installation
 
+You'll need [Lean 4's tooling](https://github.com/leanprover/elan) to build viper.
+
 Run `lake script run setup`, which will build `viper` and ask you where to place its binary.
 You can place it in a directory that's already in your path, for example.
 
