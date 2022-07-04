@@ -40,6 +40,8 @@ def printHelp : IO UInt32 := do
   #### pip
   install $[⋯ args]    runs `pip install` with arguments `args`
   uninstall $[⋯ args]  runs `pip uninstall` with arguments `args`
+  show $[⋯ args]       runs `pip show` with arguments `args`
+  freeze $[⋯ args]     runs `pip freeze` with arguments `args`
 
   #### python
   $f $[⋯ args]         runs Python interpreter on file `f` with arguments `args`
@@ -135,6 +137,12 @@ def main (args : List String) : IO UInt32 := do
   | "uninstall" :: args =>
     withLinkedEnv $ fun env => do
       spawn s!"{← getPipPath env} uninstall {" ".intercalate args}"
+  | "show" :: args =>
+    withLinkedEnv $ fun env => do
+      spawn s!"{← getPipPath env} show {" ".intercalate args}"
+  | "freeze" :: args =>
+    withLinkedEnv $ fun env => do
+      spawn s!"{← getPipPath env} freeze {" ".intercalate args}"
   
   -- python
   | "-m" :: mod :: args =>

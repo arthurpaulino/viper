@@ -69,6 +69,8 @@ usage: `viper $COMMAND`, where `COMMAND` is:
   #### pip
   install $[⋯ args]    runs `pip install` with arguments `args`
   uninstall $[⋯ args]  runs `pip uninstall` with arguments `args`
+  show $[⋯ args]       runs `pip show` with arguments `args`
+  freeze $[⋯ args]     runs `pip freeze` with arguments `args`
 
   #### python
   $f $[⋯ args]         runs Python interpreter on file `f` with arguments `args`
