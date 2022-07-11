@@ -149,6 +149,8 @@ def main (args : List String) : IO UInt32 := do
     withLinkedEnv $ fun env => do
       spawn s!"{← getPythonPath env} -m {mod} {" ".intercalate args}"
   | pyFile :: args =>
-    withLinkedEnv $ fun env => do
-      spawn s!"{← getPythonPath env} {pyFile} {" ".intercalate args}"
+    if pyFile.endsWith ".py" then
+      withLinkedEnv $ fun env => do
+        spawn s!"{← getPythonPath env} {pyFile} {" ".intercalate args}"
+    else printHelp
   | [] => withLinkedEnv $ fun env => do spawn s!"{← getPythonPath env}"
