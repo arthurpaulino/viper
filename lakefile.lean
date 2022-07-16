@@ -1,13 +1,7 @@
 import Lake
 open Lake DSL
 
-package viper {
-  -- add package configuration options here
-}
-
-lean_lib Viper {
-  -- add library configuration options here
-}
+package viper
 
 @[defaultTarget]
 lean_exe viper {
@@ -19,7 +13,6 @@ lean_exe viper {
 inductive CmdResult
   | ok  : String → CmdResult
   | err : String → CmdResult
-  | non : CmdResult
 
 def List.pop : (l : List α) → l ≠ [] → α × Array α
   | a :: as, _ => (a, ⟨as⟩)
@@ -34,7 +27,7 @@ def runCmd (cmd : String) : IO CmdResult := do
     }
     return if out.exitCode != 0 then .err out.stderr
       else .ok out.stdout
-  else return .non
+  else return .ok ""
 
 def getCurrDir : IO String := do
   match ← runCmd "pwd" with
@@ -56,6 +49,4 @@ script setup do
     match ← runCmd s!"cp build/bin/viper {binDir}/viper" with
     | .ok _    => IO.println s!"viper binary placed at {binDir}/"; return 0
     | .err res => IO.eprintln res; return 1
-    | .non     => unreachable!
   | .err res => IO.eprintln res; return 1
-  | .non     => unreachable!
