@@ -28,13 +28,13 @@ def spawn (cmd : String) : IO UInt32 := do
     child.wait
   else return 0
 
-def getCurrDir : IO String := do
-  match ← runCmd "pwd" with
-  | .ok res => return res.trim
-  | _ => unreachable!
+def getCurrDir : IO String :=
+  return (← IO.currentDir).1
 
 def getHomeDir : IO String :=
-  return s!"{"/".intercalate $ (← getCurrDir).splitOn "/" |>.take 3}"
+  return match ← IO.getEnv "HOME" with
+  | some path => path
+  | none => panic! "Couldn't find home directory"
 
 def getViperDir : IO String :=
   return s!"{← getHomeDir}/.viper"

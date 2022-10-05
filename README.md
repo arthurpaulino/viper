@@ -9,8 +9,6 @@ Instead, directories are linked to environments in a list persisted on a text fi
 Calling `viper` to run as a frontend for `python` or `pip` will trigger a lookup on that file.
 That's how `viper` knows which environment to use.
 
-**Important**: It's only been tested on Ubuntu!
-
 ## Installation
 
 You'll need [Lean 4's tooling](https://github.com/leanprover/elan) to build viper.

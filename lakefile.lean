@@ -29,13 +29,10 @@ def runCmd (cmd : String) : IO CmdResult := do
       else .ok out.stdout
   else return .ok ""
 
-def getCurrDir : IO String := do
-  match ← runCmd "pwd" with
-  | .ok res => return res.trim
-  | _ => unreachable!
-
 def getHomeDir : IO String :=
-  return s!"{"/".intercalate $ (← getCurrDir).splitOn "/" |>.take 3}"
+  return match ← IO.getEnv "HOME" with
+  | some path => path
+  | none => panic! "Couldn't find home directory"
 
 script setup do
   IO.println "building viper..."
