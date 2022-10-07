@@ -3,6 +3,8 @@ open Lake DSL
 
 package viper
 
+lean_lib Viper
+
 @[defaultTarget]
 lean_exe viper {
   root := `Main

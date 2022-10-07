@@ -1,16 +1,12 @@
 import Viper.Utils
-import Std
+import Lean
 
-abbrev Links := Std.RBMap String String compare
+abbrev Links := Lean.RBMap String String compare
 
 namespace Links
 
 def empty : Links :=
   .empty
-
--- def eraseEnv (links : Links) (env : String) : Links :=
---   links.fold (init := .empty) fun acc d e =>
---     if e == env then acc else acc.insert d e
 
 def erase (links : Links) (dirs envs : List String) : Links :=
   links.fold (init := .empty) fun acc d e =>
