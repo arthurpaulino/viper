@@ -1,5 +1,5 @@
 import Viper.Utils
-import Lean
+import Lean.Data.RBMap
 
 abbrev Links := Lean.RBMap String String compare
 

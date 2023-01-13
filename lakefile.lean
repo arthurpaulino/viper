@@ -5,12 +5,9 @@ package viper
 
 lean_lib Viper
 
-@[defaultTarget]
-lean_exe viper {
+@[default_target]
+lean_exe viper where
   root := `Main
-}
-
--- how to import these from `Viper.Utils`?
 
 inductive CmdResult
   | ok  : String → CmdResult
@@ -31,10 +28,10 @@ def runCmd (cmd : String) : IO CmdResult := do
       else .ok out.stdout
   else return .ok ""
 
-def getHomeDir : IO String :=
-  return match ← IO.getEnv "HOME" with
-  | some path => path
-  | none => panic! "Couldn't find home directory"
+def getHomeDir : IO String := do
+  match ← IO.getEnv "HOME" with
+  | some path => pure path
+  | none => throw $ IO.userError "Couldn't find home directory"
 
 script setup do
   IO.println "building viper..."
